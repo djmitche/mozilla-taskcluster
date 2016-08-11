@@ -5,16 +5,11 @@ import slugid from 'slugid';
 import denodeify from 'denodeify';
 import parseRoute from '../util/route_parser';
 
-const JOB_RETRY_DELAY = 1000 * 10;
-const JOB_ATTEMPTS = 20;
-
 const SCHEDULER_TYPE = 'task-graph-scheduler';
 
 async function scheduleAction(jobs, type, body) {
   let msg = jobs.create(type, body).
-    attempts(JOB_ATTEMPTS).
-    searchKeys(['taskId']).
-    backoff({ type: 'exponential', delay: JOB_RETRY_DELAY });
+    searchKeys(['taskId']);
 
   await denodeify(msg.save.bind(msg))();
 }
